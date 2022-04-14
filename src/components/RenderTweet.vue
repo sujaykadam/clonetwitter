@@ -16,10 +16,10 @@ export default {
   props: ['twData'],
   data(){
     return{
-      image: this.twData.picture.thumbnail,
-      name: this.twData.name.first +" "+ this.twData.name.last+" ",
-      username: "@"+this.twData.login.username,
-      tweet: this.twData.location
+      image: this.twData.picture,
+      name: this.twData.fname +" "+ this.twData.lname+" ",
+      username: "@"+this.twData.username,
+      tweet: this.twData.tweet
     }
   },
   name: "RenderTweet"

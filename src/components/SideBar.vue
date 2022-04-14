@@ -17,19 +17,19 @@
 
     <div class="lg:w-full absolute bottom-2 ">
         <button @click="dropdown = true" class="flex items-center w-52 hover:bg-lightblue rounded-full p-2 focus:outline-none">
-          <img src="https://pbs.twimg.com/profile_images/831883332564742144/C_zlxYgp_200x200.jpg" class="w-10 h-10 rounded-full border border-lighter" />
+          <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" class="w-10 h-10 rounded-full border border-lighter" />
           <div class="hidden lg:block ml-4">
-            <p class="text-sm font-bold leading-tight"> Sujay Kadam </p>
-            <p class="text-sm leading-tight"> @sujaykadam_ </p>
+            <p class="text-sm font-bold leading-tight"> {{name}}</p>
+            <p class="text-sm start leading-tight"> @{{username}} </p>
           </div>
           <i class=" hidden lg:block fa fa-angle-down ml-auto text-lg"></i>
         </button>
         <div v-if="dropdown === true" class="absolute bottom-0 left-0 w-64 rounded-lg shadow-md border-lightest bg-white mb-16">
           <button @click="dropdown = false" class="p-3 flex items-center w-full hover:bg-lightest p-2 focus:outline-none">
-            <img src="https://pbs.twimg.com/profile_images/831883332564742144/C_zlxYgp_200x200.jpg" class="w-10 h-10 rounded-full border border-lighter" />
+            <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" class="w-10 h-10 rounded-full border border-lighter" />
             <div class="ml-4">
-              <p class="text-sm font-bold leading-tight"> Sujay Kadam </p>
-              <p class="text-sm leading-tight"> @sujaykadam_ </p>
+              <p class="text-sm font-bold leading-tight"> {{name}} </p>
+              <p class="text-sm leading-tight"> @{{username}} </p>
             </div>
             <i class="fa fa-check ml-auto test-blue"></i>
           </button>
@@ -37,7 +37,7 @@
             Add an existing account
           </button>
           <button @click="dropdown = false" class="w-full text-left hover:bg-lightest border-t border-lighter p-3 test-sm focus:outline-none">
-            Log out @sujaykadam_
+            Log out {{username}}
           </button>
         </div>
       </div>
@@ -47,6 +47,7 @@
 </template>
 
 <script>
+import {store} from '../store.js'
 export default {
   name: "SideBar",
   data() {
@@ -62,7 +63,9 @@ export default {
         { icon: "fa fa-ellipsis-h", title: "More", id: "more" },
       ],
       id: 'home',
-      dropdown: false
+      dropdown: false,
+      name: `${store.state.fname} ${store.state.lname}`,
+      username: store.state.username
     };
   },
   methods:{
