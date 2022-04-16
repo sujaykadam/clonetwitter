@@ -113,6 +113,7 @@ export default {
   },
   methods: {
     addNewTweet: function () {
+      if (this.tweet != ''){
       EventBus.$emit("newTweet", this.tweet);
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
@@ -134,6 +135,10 @@ export default {
         .then((result) => console.log(result))
         .catch((error) => console.log("error", error.message));
       this.tweet = "";
+      }
+      else{
+        alert("Type some tweet")
+      }
     },
   },
 };

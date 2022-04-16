@@ -4,6 +4,7 @@
       @submit.prevent="logger"
       class="absolute top-64 justify-center content-center"
     >
+      <h1 class="m-2 mb-5 font-extrabold">Login</h1>
       <input
         v-model="username"
         class="w-full border-0 input rounded-full h-10 mb-3"
@@ -36,6 +37,26 @@
         <p class="hidden lg:block">Login</p>
         <i class="fas fa-plus lg:hidden"></i>
       </button>
+      <button
+        class="
+          block
+          m-auto
+          text-white
+          bg-blue
+          rounded-full
+          font-semibold
+          focus:outline-none
+          w-auto
+          h-12
+          w-32
+          p-3
+          mt-2
+          hover:bg-darkblue
+        " @click="redirect"
+      >
+        <p class="hidden lg:block">Sign Up</p>
+        <i class="fas fa-plus lg:hidden"></i>
+      </button>
     </form>
   </div>
 </template>
@@ -51,6 +72,9 @@ export default {
     };
   },
   methods: {
+    redirect: function(){
+      this.$router.push('/signup')
+    },
     logger: async function () {
       const encoder = new TextEncoder();
       const data = encoder.encode(this.password);
