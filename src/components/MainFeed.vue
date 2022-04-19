@@ -11,8 +11,16 @@
       <img src="../assets/loading.png" class="pt-4 max-h-10" />
     </div>
     <div>
-      <render-tweet v-for="mtweet in myTweets" :key="mtweet.id" :twData="mtweet" />
-      <render-tweet v-for="tweet in tweetsLis" :key="tweet.id" :twData="tweet" />
+      <render-tweet
+        v-for="mtweet in myTweets"
+        :key="mtweet.id"
+        :twData="mtweet"
+      />
+      <render-tweet
+        v-for="tweet in tweetsLis"
+        :key="tweet.id"
+        :twData="tweet"
+      />
     </div>
   </div>
 </template>
@@ -21,7 +29,8 @@
 import RenderTweet from "./RenderTweet.vue";
 import ToTweet from "./ToTweet.vue";
 import { EventBus } from "../main.js";
-import {store} from "../store";
+import { store } from "../store";
+var axios = require("axios");
 
 export default {
   name: "MainFeed",
@@ -50,8 +59,9 @@ export default {
         fname: store.state.fname,
         lname: store.state.lname,
         username: store.state.username,
-        picture: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-        tweet: theTweet
+        picture:
+          "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
+        tweet: theTweet,
       };
       this.myTweets.unshift(newOne);
       this.unloaded = false;
@@ -59,26 +69,23 @@ export default {
   },
   async mounted() {
     document.title = "Home";
-    this.unloaded = true
-    var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-
-    var raw = JSON.stringify({
-      username: store.state.username,
-    });
-
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow",
+    this.unloaded = true;
+    var config = {
+      method: "get",
+      url: "http://localhost:9231/tweets/tweets",
+      headers: {
+        username: `${store.state.username}`,
+      },
     };
 
-    fetch("http://localhost:9231/tweets/gettweets", requestOptions)
-      .then((response) => response.text())
-      .then((result) => {this.tweetsLis =  JSON.parse(result)
-                        this.unloaded = false;})
-      .catch((error) => console.log("error", error.message));
+    axios(config)
+      .then(function (response) {
+        this.tweetsLis = response.data;
+        this.unloaded = false;
+      }.bind(this))
+      .catch(function (error) {
+        console.log(error);
+      });
   },
   created: function () {
     EventBus.$on("newTweet", this.addToMyTweets);

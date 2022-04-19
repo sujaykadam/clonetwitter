@@ -16,7 +16,8 @@
         src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
         alt=""
       />
-      <button v-if="notmyprofile"
+      <button
+        v-if="notmyprofile"
         class="
           h-10
           p-2
@@ -60,8 +61,10 @@
 
 
 <script>
-import {store} from '../store'
-import RenderTweet from './RenderTweet.vue';
+import { store } from "../store";
+import RenderTweet from "./RenderTweet.vue";
+var axios = require("axios");
+
 export default {
   components: { RenderTweet },
   name: "MainFeed",
@@ -73,101 +76,70 @@ export default {
       followers: 0,
       ifollow: false,
       tweetlis: [],
-      notmyprofile: !(store.state.username == this.$route.query.u)
+      notmyprofile: !(store.state.username == this.$route.query.u),
     };
   },
   methods: {
     goBack: function () {
       this.$router.back();
     },
-    modifyfollow: function() {
-      var myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-
-      var raw = JSON.stringify({
-      ifollow: this.ifollow,
-      username: store.state.username,
-      profile: this.$route.query.u
+    modifyfollow: function () {
+      var data = JSON.stringify({
+        ifollow: this.ifollow,
+        username: store.state.username,
+        profile: this.$route.query.u,
       });
+      var config = {
+        method: "post",
+        url: "http://localhost:9231/modifyfollow",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: data,
+      };
 
-    var requestOptions = {
-      method: 'POST',
-      headers: myHeaders,
-      body: raw,
-      redirect: 'follow'
-    };
-
-fetch("http://localhost:9231/modifyfollow", requestOptions)
-  .then(response => response.text())
-  .then(result => {
-    this.ifollow = !this.ifollow
-    if (JSON.parse(result).action)
-      this.followers += 1
-    else
-      this.followers -= 1
-})
-  .catch(error => console.log('error', error));
-}
-  
-},
+      axios(config)
+        .then(
+          function (response) {
+            this.ifollow = !this.ifollow;
+            if (response.data.action) this.followers += 1;
+            else this.followers -= 1;
+          }.bind(this)
+        )
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+  },
   created() {
     if (this.$route.query.u == window.undefined || this.$route.query.u == "")
       this.$router.push("/404 ");
-    else{
-    document.title = "Profile";
-    var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
+    else {
+      document.title = "Profile";
 
-    var raw = JSON.stringify({
-      username: this.$route.query.u,
-    });
+      var config = {
+        method: "get",
+        url: "http://localhost:9231/user/profile",
+        headers: {
+          profile: `${this.$route.query.u}`,
+          username: `${store.state.username}`,
+        },
+      };
 
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow",
-    };
-
-    fetch("http://localhost:9231/getuser", requestOptions)
-      .then((response) => response.text())
-      .then((result) => {
-        result = JSON.parse(result);
-        this.username = result.username;
-        this.name = `${result.fname} ${result.lname}`;
-      })
-      .catch((error) => {
-        console.log("error", error);
-        this.$router.push("/404");
-      });
-
-    myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-
-    raw = JSON.stringify({
-      username: store.state.username,
-      profile: this.$route.query.u
-    });
-    requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow",
-    };
-
-    fetch("http://localhost:9231/getprofiledata", requestOptions)
-      .then((response) => response.text())
-      .then((result) => {
-      result = JSON.parse(result)
-      this.following = result.following
-      this.followers = result.followers
-      this.ifollow = result.ifollow
-      this.tweetlis = result.tweets
-      console.log(store.state)
-      })
-      .catch((error) => console.log("error", error));
+      axios(config)
+        .then(function (response) {
+          var result = response.data;
+          this.username = result.username;
+          this.name = `${result.fname} ${result.lname}`;
+          this.following = result.following;
+          this.followers = result.followers;
+          this.ifollow = result.ifollow;
+          this.tweetlis = result.tweets;
+        }.bind(this))
+        .catch(function (error) {
+          console.log(error);
+        });
     }
-      
   },
 };
 </script>

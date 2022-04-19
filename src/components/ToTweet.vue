@@ -103,7 +103,9 @@
 
 <script>
 import { EventBus } from "../main.js";
-import {store} from '../store'
+import { store } from "../store";
+var axios = require('axios');
+
 export default {
   name: "ToTweet",
   data() {
@@ -113,31 +115,33 @@ export default {
   },
   methods: {
     addNewTweet: function () {
-      if (this.tweet != ''){
-      EventBus.$emit("newTweet", this.tweet);
-      var myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
+      if (this.tweet.trim() != "") {
+        EventBus.$emit("newTweet", this.tweet);
 
-      var raw = JSON.stringify({
-        username: store.state.username,
-        tweet: this.tweet,
-      });
+        var data = JSON.stringify({
+          username: store.state.username,
+          tweet: this.tweet,
+        });
 
-      var requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow",
-      };
+        var config = {
+          method: "post",
+          url: "http://localhost:9231/tweets/tweet",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          data: data,
+        };
 
-      fetch("http://localhost:9231/tweets/puttweet", requestOptions)
-        .then((response) => response.text())
-        .then((result) => console.log(result))
-        .catch((error) => console.log("error", error.message));
-      this.tweet = "";
-      }
-      else{
-        alert("Type some tweet")
+        axios(config)
+          .then(function (response) {
+            console.log(JSON.stringify(response.data));
+            this.tweet = "";
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      } else {
+        alert("Type some tweet");
       }
     },
   },

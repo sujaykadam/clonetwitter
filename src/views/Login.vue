@@ -52,7 +52,8 @@
           p-3
           mt-2
           hover:bg-darkblue
-        " @click="redirect"
+        "
+        @click="redirect"
       >
         <p class="hidden lg:block">Sign Up</p>
         <i class="fas fa-plus lg:hidden"></i>
@@ -62,7 +63,9 @@
 </template>
 
 <script>
-import {store} from '../store.js'
+import { store } from "../store.js";
+var axios = require("axios");
+
 export default {
   name: "LoginPage",
   data() {
@@ -72,48 +75,49 @@ export default {
     };
   },
   methods: {
-    redirect: function(){
-      this.$router.push('/signup')
+    redirect: function () {
+      this.$router.push("/signup");
     },
     logger: async function () {
       const encoder = new TextEncoder();
       const data = encoder.encode(this.password);
       const hashBuffer = await crypto.subtle.digest("SHA-256", data);
       const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-      var myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
+      const hashHex = hashArray
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
 
-      var raw = JSON.stringify({
+      var creds = JSON.stringify({
         username: this.username,
         password: hashHex,
       });
 
-      var requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow",
+      var config = {
+        method: "post",
+        url: "http://localhost:9231/user/authuser",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: creds,
       };
 
-      fetch("http://localhost:9231/authuser", requestOptions)
-        .then((response) => response.text())
-        .then((result) => {
-            if (JSON.parse(result).isAuth){
-                store.commit('update',JSON.parse(result))
-                store.commit('login',JSON.parse(result))
-                this.$router.push("/home");
-            }
-            else
-                alert("Invalid Credentials");
-        })
-        .catch((error) => console.log("error", error));  
-    }
+      axios(config)
+        .then(function (response) {
+          var result = response.data;
+          if (result.isAuth) {
+            store.commit("update", result);
+            store.commit("login", result);
+            this.$router.push("/home");
+          } else alert("Invalid Credentials");
+        }.bind(this))
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
   },
   created() {
     document.title = "Login";
-    if (store.state.isAuth)
-      this.$router.push("/home");
+    if (store.state.isAuth) this.$router.push("/home");
   },
 };
 </script> 
