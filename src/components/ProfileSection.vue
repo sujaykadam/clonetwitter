@@ -91,7 +91,7 @@ export default {
       });
       var config = {
         method: "post",
-        url: "http://localhost:9231/modifyfollow",
+        url: "http://localhost:9231/user/modifyfollow",
         headers: {
           "Content-Type": "application/json",
         },
@@ -113,7 +113,7 @@ export default {
   },
   created() {
     if (this.$route.query.u == window.undefined || this.$route.query.u == "")
-      this.$router.push("/404 ");
+      this.$router.push("/404");
     else {
       document.title = "Profile";
 
