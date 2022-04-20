@@ -71,7 +71,7 @@ export default {
   data() {
     return {
       name: "",
-      username: "",
+      username: this.$route.query.u,
       following: 0,
       followers: 0,
       ifollow: false,
@@ -129,7 +129,6 @@ export default {
       axios(config)
         .then(function (response) {
           var result = response.data;
-          this.username = result.username;
           this.name = `${result.fname} ${result.lname}`;
           this.following = result.following;
           this.followers = result.followers;
