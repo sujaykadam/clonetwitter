@@ -133,7 +133,16 @@ export default {
           this.following = result.following;
           this.followers = result.followers;
           this.ifollow = result.ifollow;
-          this.tweetlis = result.tweets;
+          result.tweets.forEach(element => {
+            this.tweetlis.push({
+              'id': element.id,
+              'fname': result.fname,
+              'lname': result.lname,
+              'username': this.$route.query.u,
+              'picture': result.picture,
+              'tweet': element.tweet
+            })
+          });
         }.bind(this))
         .catch(function (error) {
           console.log(error);
